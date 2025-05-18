@@ -116,8 +116,8 @@ Threat Analyzer: http://localhost:8081
 API Usage
 
 Swagger UI:
-Log Ingestor: http://localhost:8080/swagger/index.html
-Threat Analyzer: http://localhost:8081/swagger/index.html
+Log Ingestor: http://localhost:8080/swagger/api/docs/index.html
+Threat Analyzer: http://localhost:8081/swagger/api/docs/index.html
 
 Database
 log_ingestor_db
