@@ -1,0 +1,200 @@
+basePath: /api
+definitions:
+  controllers.AnalyzeThreatRequest:
+    properties:
+      end:
+        example: "2025-03-27T00:00:00Z"
+        format: date-time
+        type: string
+      start:
+        example: "2025-03-26T00:00:00Z"
+        format: date-time
+        type: string
+    required:
+    - end
+    - start
+    type: object
+  threatentity.Threat:
+    properties:
+      action:
+        type: string
+      databaseQuery:
+        type: string
+      fileName:
+        type: string
+      id:
+        type: integer
+      ipAddress:
+        type: string
+      severity:
+        type: string
+      threatType:
+        type: string
+      timestamp:
+        type: string
+      userId:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: API for threat analyzer
+  title: Threat Analyzer Service API
+  version: "1.0"
+paths:
+  /threats:
+    get:
+      description: Fetches all detected threats from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of threats
+          schema:
+            items:
+              $ref: '#/definitions/threatentity.Threat'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve all threats
+      tags:
+      - Threats
+  /threats/{id}:
+    get:
+      description: Fetches a threat by its ID
+      parameters:
+      - description: Threat ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Threat details
+          schema:
+            $ref: '#/definitions/threatentity.Threat'
+        "404":
+          description: Threat not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve a specific threat
+      tags:
+      - Threats
+  /threats/{threatId}:
+    delete:
+      description: Deletes a threat by its ID
+      parameters:
+      - description: threat ID
+        in: path
+        name: threatId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: threat deleted successfully
+        "404":
+          description: threat not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a specific threat
+      tags:
+      - Threats
+  /threats/analyze:
+    post:
+      consumes:
+      - application/json
+      description: Analyzes logs within the specified time range and detects threats
+      parameters:
+      - description: Start and end time for log analysis
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.AnalyzeThreatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of detected threats
+          schema:
+            items:
+              $ref: '#/definitions/threatentity.Threat'
+            type: array
+        "400":
+          description: Invalid request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Analyze logs for threats
+      tags:
+      - Threats
+  /threats/search:
+    get:
+      description: Searches threats by type, user, or time range
+      parameters:
+      - description: Threat type
+        in: query
+        name: type
+        type: string
+      - description: User ID
+        in: query
+        name: user
+        type: string
+      - description: Start time (RFC3339)
+        in: query
+        name: startTime
+        type: string
+      - description: End time (RFC3339)
+        in: query
+        name: endTime
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of matching threats
+          schema:
+            items:
+              $ref: '#/definitions/threatentity.Threat'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Search threats
+      tags:
+      - Threats
+swagger: "2.0"

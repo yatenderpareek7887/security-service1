@@ -1,0 +1,302 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for threat analyzer",
+        "title": "Threat Analyzer Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8081",
+    "basePath": "/api",
+    "paths": {
+        "/threats": {
+            "get": {
+                "description": "Fetches all detected threats from the database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Threats"
+                ],
+                "summary": "Retrieve all threats",
+                "responses": {
+                    "200": {
+                        "description": "List of threats",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/threatentity.Threat"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/threats/analyze": {
+            "post": {
+                "description": "Analyzes logs within the specified time range and detects threats",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Threats"
+                ],
+                "summary": "Analyze logs for threats",
+                "parameters": [
+                    {
+                        "description": "Start and end time for log analysis",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.AnalyzeThreatRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of detected threats",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/threatentity.Threat"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/threats/search": {
+            "get": {
+                "description": "Searches threats by type, user, or time range",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Threats"
+                ],
+                "summary": "Search threats",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Threat type",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start time (RFC3339)",
+                        "name": "startTime",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End time (RFC3339)",
+                        "name": "endTime",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of matching threats",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/threatentity.Threat"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/threats/{id}": {
+            "get": {
+                "description": "Fetches a threat by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Threats"
+                ],
+                "summary": "Retrieve a specific threat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Threat ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Threat details",
+                        "schema": {
+                            "$ref": "#/definitions/threatentity.Threat"
+                        }
+                    },
+                    "404": {
+                        "description": "Threat not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/threats/{threatId}": {
+            "delete": {
+                "description": "Deletes a threat by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Threats"
+                ],
+                "summary": "Delete a specific threat",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "threat ID",
+                        "name": "threatId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "threat deleted successfully"
+                    },
+                    "404": {
+                        "description": "threat not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.AnalyzeThreatRequest": {
+            "type": "object",
+            "required": [
+                "end",
+                "start"
+            ],
+            "properties": {
+                "end": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-03-27T00:00:00Z"
+                },
+                "start": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-03-26T00:00:00Z"
+                }
+            }
+        },
+        "threatentity.Threat": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "databaseQuery": {
+                    "type": "string"
+                },
+                "fileName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "ipAddress": {
+                    "type": "string"
+                },
+                "severity": {
+                    "type": "string"
+                },
+                "threatType": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

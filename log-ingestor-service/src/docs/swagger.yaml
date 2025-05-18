@@ -1,0 +1,184 @@
+definitions:
+  genricerror.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  logdto.CreateLogRequest:
+    properties:
+      action:
+        type: string
+      databaseQuery:
+        type: string
+      fileName:
+        type: string
+      ipaddress:
+        type: string
+      timestamp:
+        type: string
+      userID:
+        type: string
+    required:
+    - timestamp
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for ingesting and querying logs
+  title: Log Ingestor Service API
+  version: "1.0"
+paths:
+  /api/logs:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all logs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/logdto.CreateLogRequest'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+      summary: Get all logs
+      tags:
+      - Logs
+    post:
+      consumes:
+      - application/json
+      description: Create a new log record with provided details
+      parameters:
+      - description: Log to create
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/logdto.CreateLogRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/logdto.CreateLogRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+      summary: Create a new log
+      tags:
+      - Logs
+  /api/logs/{logId}:
+    delete:
+      description: Deletes a log by its ID
+      parameters:
+      - description: Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: log deleted successfully
+        "404":
+          description: log not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a specific log
+      tags:
+      - Logs
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a log by its ID
+      parameters:
+      - description: Log ID
+        in: path
+        name: logId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/logdto.CreateLogRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+      summary: Get a specific log
+      tags:
+      - Logs
+  /api/logs/search:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve logs based on time range, source, or user
+      parameters:
+      - description: Start time (RFC3339)
+        in: query
+        name: start_time
+        type: string
+      - description: End time (RFC3339)
+        in: query
+        name: end_time
+        type: string
+      - description: Source IP address
+        in: query
+        name: source
+        type: string
+      - description: User ID
+        in: query
+        name: user_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/logdto.CreateLogRequest'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/genricerror.ErrorResponse'
+      summary: Search logs
+      tags:
+      - Logs
+swagger: "2.0"

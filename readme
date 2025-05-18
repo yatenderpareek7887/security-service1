@@ -1,0 +1,19 @@
+docker compose up -d
+docker compose ps
+
+docker compose down
+
+docker compose up -d --build
+# The -d flag runs containers in detached mode.
+# The --build flag ensures images are rebuilt if not already done.
+
+docker compose logs log-ingestor-service
+
+docker compose logs threat-analyzer-service
+
+docker compose logs mysql
+
+
+
+Recreate Containers Without Stopping:
+docker compose up -d --build --force-recreate
