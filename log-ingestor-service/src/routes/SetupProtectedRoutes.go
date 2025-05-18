@@ -5,7 +5,7 @@ import (
 	controllers "github.com/yatender-pareek/log-ingestor-service/src/controllers/log-controller"
 )
 
-func SetupRouter(r *gin.RouterGroup) *gin.RouterGroup {
+func SetupProtectedRoutes(r *gin.RouterGroup) *gin.RouterGroup {
 	r.POST("/logs", controllers.CreateLog)
 	r.GET("/logs", controllers.GetAllLogs)
 	r.GET("/logs/search", controllers.SearchLogs)

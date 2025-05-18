@@ -15,8 +15,140 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/threats": {
+        "/api/login": {
             "get": {
+                "description": "Authenticates a user and returns a JWT token using query parameters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User username",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User password",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login success with JWT token",
+                        "schema": {
+                            "$ref": "#/definitions/authdto.LoginResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error: Invalid input",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "error: Invalid credentials",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register": {
+            "post": {
+                "description": "Creates a new user account with username, password, and email",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "User registration details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authdto.RegisterRequestDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Registration success",
+                        "schema": {
+                            "$ref": "#/definitions/authdto.RegisterResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "error: Invalid input",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "error: Username or email already exists",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error: Server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/threats": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Fetches all detected threats from the database",
                 "produces": [
                     "application/json"
@@ -47,8 +179,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/threats/analyze": {
+        "/api/threats/analyze": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Analyzes logs within the specified time range and detects threats",
                 "consumes": [
                     "application/json"
@@ -102,8 +239,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/threats/search": {
+        "/api/threats/search": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Searches threats by type, user, or time range",
                 "produces": [
                     "application/json"
@@ -160,8 +302,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/threats/{id}": {
+        "/api/threats/{threatId}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Fetches a threat by its ID",
                 "produces": [
                     "application/json"
@@ -172,9 +319,9 @@ const docTemplate = `{
                 "summary": "Retrieve a specific threat",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Threat ID",
-                        "name": "id",
+                        "name": "threatId",
                         "in": "path",
                         "required": true
                     }
@@ -205,10 +352,13 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/threats/{threatId}": {
+            },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes a threat by its ID",
                 "produces": [
                     "application/json"
@@ -253,6 +403,47 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "authdto.LoginResponseDTO": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "authdto.RegisterRequestDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 8
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 8
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 3
+                }
+            }
+        },
+        "authdto.RegisterResponseDTO": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "controllers.AnalyzeThreatRequest": {
             "type": "object",
             "required": [
@@ -304,14 +495,22 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8081",
-	BasePath:         "/api",
+	Host:             "localhost:8083",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Threat Analyzer Service API",
 	Description:      "API for threat analyzer",

@@ -43,7 +43,7 @@ func (s *ThreatService) GetAllThreats() ([]threatentity.Threat, error) {
 	return threats, nil
 }
 
-func (s *ThreatService) GetThreatByID(id string) (threatentity.Threat, error) {
+func (s *ThreatService) GetThreatByID(id uint64) (threatentity.Threat, error) {
 	var threat threatentity.Threat
 	if err := mysqlconfig.GetDB().First(&threat, id).Error; err != nil {
 		return threatentity.Threat{}, err

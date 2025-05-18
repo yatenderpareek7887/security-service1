@@ -14,6 +14,7 @@ services:
       - MYSQL_DBNAME=threat_log_db
       - BASE_PATH=/api/
       - PORT=8080
+      - JWT_SECRET_KEY=7de0b09dc71698f5d64ddca90b4278207595fd2b25cfc1bc98f7e7345fd5029a
     depends_on:
       mysql:
         condition: service_healthy
@@ -36,6 +37,7 @@ services:
       - MYSQL_DBNAME=threat_log_db
       - BASE_PATH=/api/
       - PORT=8081
+      - JWT_SECRET_KEY=7de0b09dc71698f5d64ddca90b4278207595fd2b25cfc1bc98f7e7345fd5029a
     depends_on:
       mysql:
         condition: service_healthy

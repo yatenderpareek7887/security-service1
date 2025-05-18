@@ -52,6 +52,7 @@ func InitControllers() {
 // @Tags Logs
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param log body logdto.CreateLogRequest true "Log to create"
 // @Success 201 {object} logdto.CreateLogRequest
 // @Failure 400 {object} genricerror.ErrorResponse
@@ -84,6 +85,7 @@ func CreateLog(c *gin.Context) {
 // @Tags Logs
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} logdto.CreateLogRequest
 // @Failure 500 {object} genricerror.ErrorResponse
 // @Router /api/logs [get]
@@ -103,6 +105,7 @@ func GetAllLogs(c *gin.Context) {
 // @Tags Logs
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param logId path int true "Log ID"
 // @Success 200 {object} logdto.CreateLogRequest
 // @Failure 400 {object} genricerror.ErrorResponse
@@ -135,6 +138,7 @@ func GetLogByID(c *gin.Context) {
 // @Description Deletes a log by its ID
 // @Tags Logs
 // @Produce json
+// @Security BearerAuth
 // @Param logId path int true "Log ID"
 // @Success 204 {object} nil "log deleted successfully"
 // @Failure 404 {object} map[string]string "log not found"
@@ -166,6 +170,7 @@ func DeletelogByID(c *gin.Context) {
 // @Tags Logs
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param start_time query string false "Start time (RFC3339)"
 // @Param end_time query string false "End time (RFC3339)"
 // @Param source query string false "Source IP address"

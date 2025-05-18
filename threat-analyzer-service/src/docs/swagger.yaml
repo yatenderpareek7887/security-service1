@@ -1,5 +1,33 @@
-basePath: /api
 definitions:
+  authdto.LoginResponseDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  authdto.RegisterRequestDTO:
+    properties:
+      email:
+        maxLength: 100
+        minLength: 8
+        type: string
+      password:
+        maxLength: 100
+        minLength: 8
+        type: string
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  authdto.RegisterResponseDTO:
+    properties:
+      message:
+        type: string
+    type: object
   controllers.AnalyzeThreatRequest:
     properties:
       end:
@@ -35,14 +63,98 @@ definitions:
       userId:
         type: string
     type: object
-host: localhost:8081
+host: localhost:8083
 info:
   contact: {}
   description: API for threat analyzer
   title: Threat Analyzer Service API
   version: "1.0"
 paths:
-  /threats:
+  /api/login:
+    get:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token using query parameters
+      parameters:
+      - description: User username
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: User password
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login success with JWT token
+          schema:
+            $ref: '#/definitions/authdto.LoginResponseDTO'
+        "400":
+          description: 'error: Invalid input'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: Invalid credentials'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: User login
+      tags:
+      - Auth
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account with username, password, and email
+      parameters:
+      - description: User registration details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/authdto.RegisterRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Registration success
+          schema:
+            $ref: '#/definitions/authdto.RegisterResponseDTO'
+        "400":
+          description: 'error: Invalid input'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: 'error: Username or email already exists'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: Server error'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Auth
+  /api/threats:
     get:
       description: Fetches all detected threats from the database
       produces:
@@ -60,41 +172,12 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Retrieve all threats
       tags:
       - Threats
-  /threats/{id}:
-    get:
-      description: Fetches a threat by its ID
-      parameters:
-      - description: Threat ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Threat details
-          schema:
-            $ref: '#/definitions/threatentity.Threat'
-        "404":
-          description: Threat not found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Retrieve a specific threat
-      tags:
-      - Threats
-  /threats/{threatId}:
+  /api/threats/{threatId}:
     delete:
       description: Deletes a threat by its ID
       parameters:
@@ -120,10 +203,44 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete a specific threat
       tags:
       - Threats
-  /threats/analyze:
+    get:
+      description: Fetches a threat by its ID
+      parameters:
+      - description: Threat ID
+        in: path
+        name: threatId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Threat details
+          schema:
+            $ref: '#/definitions/threatentity.Threat'
+        "404":
+          description: Threat not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Retrieve a specific threat
+      tags:
+      - Threats
+  /api/threats/analyze:
     post:
       consumes:
       - application/json
@@ -156,10 +273,12 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Analyze logs for threats
       tags:
       - Threats
-  /threats/search:
+  /api/threats/search:
     get:
       description: Searches threats by type, user, or time range
       parameters:
@@ -194,7 +313,15 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Search threats
       tags:
       - Threats
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

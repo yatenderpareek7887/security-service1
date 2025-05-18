@@ -30,11 +30,12 @@ func InitController() {
 // @Tags Threats
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param request body AnalyzeThreatRequest true "Start and end time for log analysis"
 // @Success 200 {array} threatentity.Threat "List of detected threats"
 // @Failure 400 {object} map[string]string "Invalid request"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /threats/analyze [post]
+// @Router /api/threats/analyze [post]
 func AnalyzeThreats(c *gin.Context) {
 	var req threatanalyzerresquest.AnalyzeThreatRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -80,9 +81,10 @@ func AnalyzeThreats(c *gin.Context) {
 // @Description Fetches all detected threats from the database
 // @Tags Threats
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} threatentity.Threat "List of threats"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /threats [get]
+// @Router /api/threats [get]
 func GetAllThreats(c *gin.Context) {
 	threats, err := threatService.GetAllThreats()
 	if err != nil {
@@ -98,14 +100,20 @@ func GetAllThreats(c *gin.Context) {
 // @Description Fetches a threat by its ID
 // @Tags Threats
 // @Produce json
-// @Param id path string true "Threat ID"
+// @Security BearerAuth
+// @Param threatId path int true "Threat ID"
 // @Success 200 {object} threatentity.Threat "Threat details"
 // @Failure 404 {object} map[string]string "Threat not found"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /threats/{id} [get]
+// @Router /api/threats/{threatId} [get]
 func GetThreatByID(c *gin.Context) {
-	id := c.Param("id")
-	threat, err := threatService.GetThreatByID(id)
+	threatIDStr := c.Param("threatId")
+	threatID, err := strconv.ParseUint(threatIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "error in parse threat id"})
+		return
+	}
+	threat, err := threatService.GetThreatByID(threatID)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Threat not found"})
@@ -123,11 +131,12 @@ func GetThreatByID(c *gin.Context) {
 // @Description Deletes a threat by its ID
 // @Tags Threats
 // @Produce json
+// @Security BearerAuth
 // @Param threatId path int true "threat ID"
 // @Success 204 {object} nil "threat deleted successfully"
 // @Failure 404 {object} map[string]string "threat not found"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /threats/{threatId} [delete]
+// @Router /api/threats/{threatId} [delete]
 func DeletethreatByID(c *gin.Context) {
 	threatIDStr := c.Param("threatId")
 	threatID, err := strconv.ParseUint(threatIDStr, 10, 64)
@@ -152,13 +161,14 @@ func DeletethreatByID(c *gin.Context) {
 // @Description Searches threats by type, user, or time range
 // @Tags Threats
 // @Produce json
+// @Security BearerAuth
 // @Param type query string false "Threat type"
 // @Param user query string false "User ID"
 // @Param startTime query string false "Start time (RFC3339)" format:"date-time"
 // @Param endTime query string false "End time (RFC3339)" format:"date-time"
 // @Success 200 {array} threatentity.Threat "List of matching threats"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /threats/search [get]
+// @Router /api/threats/search [get]
 func SearchThreats(c *gin.Context) {
 	threatType := c.Query("type")
 	userID := c.Query("user")
