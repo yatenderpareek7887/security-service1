@@ -17,7 +17,7 @@ import (
 // @title Threat Analyzer Service API
 // @version 1.0
 // @description API for threat analyzer
-// @host localhost:8083
+// @host localhost:8081
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization

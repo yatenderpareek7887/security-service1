@@ -31,7 +31,7 @@ var (
 // @Failure 400 {object} map[string]string "error: Invalid input"
 // @Failure 409 {object} map[string]string "error: Username or email already exists"
 // @Failure 500 {object} map[string]string "error: Server error"
-// @Router /api/v1/auth/register [post]
+// @Router /api/register [post]
 func Register(c *gin.Context) {
 	var registerDTO authdto.RegisterRequestDTO
 	if err := c.ShouldBindJSON(&registerDTO); err != nil {
@@ -84,7 +84,7 @@ func Register(c *gin.Context) {
 // @Failure 400 {object} map[string]string "error: Invalid input"
 // @Failure 401 {object} map[string]string "error: Invalid credentials"
 // @Failure 500 {object} map[string]string "error: Server error"
-// @Router /api/v1/auth/login [get]
+// @Router /api/login [get]
 func Login(c *gin.Context) {
 	var loginDTO authdto.LoginRequestDTO
 	if err := c.ShouldBindQuery(&loginDTO); err != nil {

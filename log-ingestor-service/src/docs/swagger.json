@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8082",
+    "host": "localhost:8080",
     "paths": {
         "/api/login": {
             "get": {
@@ -76,6 +76,11 @@
         },
         "/api/logs": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get list of all logs",
                 "consumes": [
                     "application/json"
@@ -106,6 +111,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new log record with provided details",
                 "consumes": [
                     "application/json"
@@ -152,6 +162,11 @@
         },
         "/api/logs/search": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve logs based on time range, source, or user",
                 "consumes": [
                     "application/json"
@@ -216,6 +231,11 @@
         },
         "/api/logs/{logId}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a log by its ID",
                 "consumes": [
                     "application/json"
@@ -264,6 +284,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes a log by its ID",
                 "produces": [
                     "application/json"
@@ -308,7 +333,7 @@
         },
         "/api/register": {
             "post": {
-                "description": "Creates a new user account with username and password",
+                "description": "Creates a new user account with username, password, and email",
                 "consumes": [
                     "application/json"
                 ],
@@ -347,7 +372,7 @@
                         }
                     },
                     "409": {
-                        "description": "error: Username already exists",
+                        "description": "error: Username or email already exists",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -443,6 +468,14 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

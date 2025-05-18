@@ -83,6 +83,11 @@ const docTemplate = `{
         },
         "/api/logs": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get list of all logs",
                 "consumes": [
                     "application/json"
@@ -113,6 +118,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new log record with provided details",
                 "consumes": [
                     "application/json"
@@ -159,6 +169,11 @@ const docTemplate = `{
         },
         "/api/logs/search": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve logs based on time range, source, or user",
                 "consumes": [
                     "application/json"
@@ -223,6 +238,11 @@ const docTemplate = `{
         },
         "/api/logs/{logId}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a log by its ID",
                 "consumes": [
                     "application/json"
@@ -271,6 +291,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes a log by its ID",
                 "produces": [
                     "application/json"
@@ -315,7 +340,7 @@ const docTemplate = `{
         },
         "/api/register": {
             "post": {
-                "description": "Creates a new user account with username and password",
+                "description": "Creates a new user account with username, password, and email",
                 "consumes": [
                     "application/json"
                 ],
@@ -354,7 +379,7 @@ const docTemplate = `{
                         }
                     },
                     "409": {
-                        "description": "error: Username already exists",
+                        "description": "error: Username or email already exists",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -451,13 +476,21 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8082",
+	Host:             "localhost:8080",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Log Ingestor Service API",

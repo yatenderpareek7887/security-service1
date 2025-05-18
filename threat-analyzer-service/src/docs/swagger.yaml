@@ -63,7 +63,7 @@ definitions:
       userId:
         type: string
     type: object
-host: localhost:8083
+host: localhost:8081
 info:
   contact: {}
   description: API for threat analyzer
