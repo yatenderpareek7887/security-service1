@@ -58,7 +58,7 @@ info:
   version: "1.0"
 paths:
   /api/login:
-    get:
+    post:
       consumes:
       - application/json
       description: Authenticates a user and returns a JWT token using query parameters

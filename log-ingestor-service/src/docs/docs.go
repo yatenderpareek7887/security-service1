@@ -16,7 +16,7 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/login": {
-            "get": {
+            "post": {
                 "description": "Authenticates a user and returns a JWT token using query parameters",
                 "consumes": [
                     "application/json"

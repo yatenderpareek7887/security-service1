@@ -85,7 +85,7 @@ func Register(c *gin.Context) {
 // @Failure 400 {object} map[string]string "error: Invalid input"
 // @Failure 401 {object} map[string]string "error: Invalid credentials"
 // @Failure 500 {object} map[string]string "error: Server error"
-// @Router /api/login [get]
+// @Router /api/login [post]
 func Login(c *gin.Context) {
 	var loginDTO authdto.LoginRequestDTO
 	if err := c.ShouldBindQuery(&loginDTO); err != nil {

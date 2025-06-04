@@ -9,7 +9,7 @@
     "host": "localhost:8080",
     "paths": {
         "/api/login": {
-            "get": {
+            "post": {
                 "description": "Authenticates a user and returns a JWT token using query parameters",
                 "consumes": [
                     "application/json"

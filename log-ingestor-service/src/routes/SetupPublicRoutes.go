@@ -7,6 +7,6 @@ import (
 
 func SetupPublicRoutes(r *gin.RouterGroup) *gin.RouterGroup {
 	r.POST("/register", authcontroller.Register)
-	r.GET("/login", authcontroller.Login)
+	r.POST("/login", authcontroller.Login)
 	return r
 }
